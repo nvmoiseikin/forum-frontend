@@ -162,7 +162,7 @@ export default {
     height: 32px
     width: 32px
     border-radius: 50%
-    background-color: $topic_block_background
+    border: 1px solid $border-base-color
     margin-right: 8px
     display: flex
     justify-content: center
@@ -190,8 +190,11 @@ export default {
   .comment-content
     position: relative
     padding: 15px
+    border: 1px solid $border-base-color
     border-radius: 4px
-    background-color: $comment_background_color
+    background-color: $text_background_color
+    position: relative
+    padding: 15px
     word-wrap: break-word
     color: $base_font_color
     font-size: $base_font_size

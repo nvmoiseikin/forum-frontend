@@ -1,140 +1,147 @@
 <template>
   <div class="content row" v-if="isPostLoaded">
-    <div class="main-content col-xs-12 col-md-6">
-      <router-link :to="{name: 'home'}" class="arrow-home col-xs-12 start-xs">
-        <i class='icon-arrow-back'></i>
-        <span class='arrow-home-text'>Главная</span>
-      </router-link>
-
-      <div class="post-card">
-        <h1 class="post-title">{{ post.title }}</h1>
-        <div class="post-tags row" v-if="hasTags">
-          <i class='post-tags-label icon-label'></i>
-          <a href="#" class="post-tag" v-for="(tag, i) in tags" :key="i">{{ tag }}</a>
-        </div>
-        <div class="post-block">
-          <div class='row between-xs bottom-xs'>
-            <div class="post-user-block col-xs-6 row bottom-xs">
-
-              <div class="post-user-img">{{ firstCharOfAuthorName }}</div>
-              <a href="#" class="post-user-name">{{ author.name }}</a>
-            </div>
-            <div class="post-time col-xs-6 end-xs" v-if="post.created_at">
-              {{ [post.created_at, "YYYY-MM-DD HH:mm:ss"] | moment("from") }}
-            </div>
-          </div>
-          <div class="post-body col-xs-12 col-sm">
-            <div  class="post-content"
-                  :class="{ 'post-content-edited': wasEdited }"
-            >
-              {{ post.content }}
-            </div>
-            <div class="post-props row end-xs"  v-if="isAuthor">
-              <router-link :to="{ name: 'post', params: { postId } }" v-if="post.canEdit" tag="span" class="post-props-edit">Редактировать</router-link>
-              <span class="post-props-delete" @click="delConfirmation">Удалить</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="post-card">
-        <h2 class="post-title-secondary"  v-if="isCommentsLoaded && hasComments">
-          Комментарии ({{ commentsCount }})
-        </h2>
-        <comment  v-for="comment in comments"
-                  :key="comment.id"
-                  :comment="comment"
-                  @answer="prepareComment"
-        />
-        <div class='post-comments-load-button'>
-          <button class="button button-inverse">Больше комментариев ... </button>
-        </div>
-        <div class="post-block" v-if="!isLoggedIn">
-          <h2 id="comment" class="add-comments-header">Оставить комментарий</h2>
-          <div class="post-block-auth">
-            <router-link to="/login" class="post-block-auth-link">Войдите</router-link>
-            или
-            <router-link to="/signup" class="post-block-auth-link">зарегистрируйтесь</router-link>
-            чтобы оставить комментарий
-          </div>
-        </div>
-
-        <div class="post-block" v-else>
-          <h2 class="add-comments-header">Оставить комментарий</h2>
-          <div  class="row">
-            <div class="post-user-img">{{ firstCharOfMyName }}</div>
-            <div class="add-comments-body row col-xs-12 col-sm">
-              <textarea-autosize  type="text"
-                                  class="add-comments-content col-xs-12 col-sm"
-                                  ref="comment"
-                                  v-model="myComment"
-                                  @keydown.native="operateKeyDown"
-              ></textarea-autosize>
-              <div class="row col-xs-12 center-xs start-sm">
-                <button class="button button-main" @click="addComment">Отправить</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="post-card" v-if="false">
-        <h2>Похожие запросы</h2>
-         <div class='same-request row middle-xs'>
-          <div class='col-xs-12 col-sm-6'>
-            <h4 class="same-request-header">Как вы разрабатываете REST API?</h4>
-            <div class='same-request-props row'>
-              <div class='same-request-props-item'>
-                <i class='icon-label'></i>
-                <span>RESTFUL API</span>
-              </div>
-              <div class='same-request-props-item'>
-                 <i class='icon-clock'></i>
-                <span>5 минут назад</span>
-              </div>
-              <div class='same-request-props-item'>
-                 <i class='icon-eye'></i>
-                <span>25 просмотров</span>
-              </div>
-            </div>
-          </div>
-          <div class='same-request-answer col-xs-6 col-sm-3'>
-            <a class="row middle-xs">
-              <i class='icon-speak'></i>
-              <span>Ответить</span>
-            </a>
-          </div>
-          <div class='col-xs-6 col-sm-3 end-xs'>
-            <div class='same-request-count'>
-              <span class="same-request-count-number">3</span>
-              <span class="same-request-count-word">ответа</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-    <div class="left-content col-md-2 first-md">
+	<div class="left-aside col-md-1 first-md visible-md-lg">
         <div class="side-bar">
         </div>
     </div>
-    <div class="right-content col-xs-12 col-md-4">
-        <div class="new-topic-block">
-          <h2>Новые темы</h2>
-          <div v-for="lastItem in lastItems" :key="lastItem.id" class="new-topic row">
-            <div class="userImg">{{lastItem.username[0].toUpperCase()}}</div>
-            <p
-              @click="() => linkToTopic(lastItem.id)"
-              class="new-topic-name col-xs">
-              {{lastItem.title}}
-            </p>
-            <div class="new-topic-props col-xs-2">
-              <p class="comments_count">{{lastItem.comments}} </p>
-              <p class="comments_count">{{ lastItem.comments | pluralize( ['ответ', 'ответа', 'ответов']) }}</p>
-            </div>
-          </div>
+	<div class="right-aside col-md-1 last-md  visible-md-lg">
+        <div class="side-bar">
         </div>
     </div>
+	<div class="main-content-wrap col-xs-12 col-md-10 row">
+	  <div class="main-content col-xs-12 col-md-8">
+		  <router-link :to="{name: 'home'}" class="arrow-home col-xs-12 start-xs">
+			<i class='icon-arrow-back'></i>
+			<span class='arrow-home-text'>Главная</span>
+		  </router-link>
+
+		  <div class="post-card">
+			<h1 class="post-title">{{ post.title }}</h1>
+			<div class="post-tags row" v-if="hasTags">
+			  <i class='post-tags-label icon-label'></i>
+			  <a href="#" class="post-tag" v-for="(tag, i) in tags" :key="i">{{ tag }}</a>
+			</div>
+			<div class="post-block">
+			  <div class='row between-xs bottom-xs'>
+				<div class="post-user-block col-xs-6 row bottom-xs">
+
+				  <div class="post-user-img">{{ firstCharOfAuthorName }}</div>
+				  <a href="#" class="post-user-name">{{ author.name }}</a>
+				</div>
+				<div class="post-time col-xs-6 end-xs" v-if="post.created_at">
+				  {{ [post.created_at, "YYYY-MM-DD HH:mm:ss"] | moment("from") }}
+				</div>
+			  </div>
+			  <div class="post-body col-xs-12 col-sm">
+				<div  class="post-content"
+					  :class="{ 'post-content-edited': wasEdited }"
+				>
+				  {{ post.content }}
+				</div>
+				<div class="post-props row end-xs"  v-if="isAuthor">
+				  <router-link :to="{ name: 'post', params: { postId } }" v-if="post.canEdit" tag="span" class="post-props-edit">Редактировать</router-link>
+				  <span class="post-props-delete" @click="delConfirmation">Удалить</span>
+				</div>
+			  </div>
+			</div>
+		  </div>
+
+		  <div class="post-card">
+			<h2 class="post-title-secondary"  v-if="isCommentsLoaded && hasComments">
+			  Комментарии ({{ commentsCount }})
+			</h2>
+			<comment  v-for="comment in comments"
+					  :key="comment.id"
+					  :comment="comment"
+					  @answer="prepareComment"
+			/>
+			<div class='post-comments-load-button'>
+			  <button class="button button-inverse">Больше комментариев ... </button>
+			</div>
+			<div class="post-block" v-if="!isLoggedIn">
+			  <h2 id="comment" class="add-comments-header">Оставить комментарий</h2>
+			  <div class="post-block-auth">
+				<router-link to="/login" class="post-block-auth-link">Войдите</router-link>
+				или
+				<router-link to="/signup" class="post-block-auth-link">зарегистрируйтесь</router-link>
+				чтобы оставить комментарий
+			  </div>
+			</div>
+
+			<div class="post-block" v-else>
+			  <h2 class="add-comments-header">Оставить комментарий</h2>
+			  <div  class="row">
+				<div class="post-user-img">{{ firstCharOfMyName }}</div>
+				<div class="add-comments-body row col-xs-12 col-sm">
+				  <textarea-autosize  type="text"
+									  class="add-comments-content col-xs-12 col-sm"
+									  ref="comment"
+									  v-model="myComment"
+									  @keydown.native="operateKeyDown"
+				  ></textarea-autosize>
+				  <div class="row col-xs-12 center-xs start-sm">
+					<button class="button button-main" @click="addComment">Отправить</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		  <div class="post-card" v-if="true">
+			<h2>Похожие запросы</h2>
+			 <div class='same-request row middle-xs'>
+			  <div class='col-xs-12 col-sm-6'>
+				<h4 class="same-request-header">Как вы разрабатываете REST API?</h4>
+				<div class='same-request-props row'>
+				  <div class='same-request-props-item'>
+					<i class='icon-label'></i>
+					<span>RESTFUL API</span>
+				  </div>
+				  <div class='same-request-props-item'>
+					 <i class='icon-clock'></i>
+					<span>5 минут назад</span>
+				  </div>
+				  <div class='same-request-props-item'>
+					 <i class='icon-eye'></i>
+					<span>25 просмотров</span>
+				  </div>
+				</div>
+			  </div>
+			  <div class='same-request-answer col-xs-6 col-sm-3'>
+				<a class="row middle-xs">
+				  <i class='icon-speak'></i>
+				  <span>Ответить</span>
+				</a>
+			  </div>
+			  <div class='col-xs-6 col-sm-3 end-xs'>
+				<div class='same-request-count'>
+				  <span class="same-request-count-number">3</span>
+				  <span class="same-request-count-word">ответа</span>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		<div class="right-content-wrap col-xs-12 col-md-4 last-md">
+		  <div class="right-content">
+			<div class="new-topic-block">
+				<h2>Новые темы</h2>
+				<div v-for="lastItem in lastItems" :key="lastItem.id" class="new-topic row">
+					<div class="userImg">{{lastItem.username[0].toUpperCase()}}</div>
+					<p
+						@click="() => linkToTopic(lastItem.id)"
+						class="new-topic-name col-xs">
+						{{lastItem.title}}
+					</p>
+					<div class="new-topic-props col-xs-2 last-xs">
+						<p class="comments_count">{{lastItem.comments}} </p>
+						<p class="comments_count">{{ lastItem.comments | pluralize( ['ответ', 'ответа', 'ответов']) }}</p>
+					</div>
+				</div>
+			</div>
+		  </div>
+		</div>
+    </div>
+   
     <div class='shadow' v-if="showDelConfirmation || wasDeleted"></div>
     <div class="del-confirm row center-xs col-xs-12 around-sm col-sm-6" v-if="showDelConfirmation">
         <p class="col-xs-12">Вы уверены, что хотите удалить пост? Все комментарии тоже будут удалены.</p>
@@ -271,10 +278,10 @@
       margin-bottom: 15px
       &.add-comments-header
         margin-bottom: 10px
-
+		
   .main-content
     margin: 0
-    padding: 0 15px
+    padding: 0
     *
       margin: 0
       padding: 0
@@ -301,10 +308,10 @@
         background-color: inherit
         margin-right: 11px
 
-  .post-card
-    padding: 20px
-    margin-bottom: 17px
-
+  .post-card 
+    padding: 10px 20px
+    margin: 0 0 20px 0
+	
   .post-title
     font-size: $forun_item_title_size
     word-wrap: break-word
@@ -331,8 +338,7 @@
     display: inline-block
     font-size: $forun_item_secondary_font_size
     line-height: 15px
-    color: $base_font_color
-    opacity: 0.5
+    color: $tags_forumItem_color
     text-decoration: none
     &:hover
       opacity: 1
@@ -353,7 +359,7 @@
       height: 32px
       width: 32px
       border-radius: 50%
-      background-color: $topic_block_background
+      border: 1px solid $border-base-color
       margin-right: 8px
       display: flex
       justify-content: center
@@ -380,8 +386,9 @@
 
     .post-content
       padding: 15px
+      border: 1px solid $border-base-color
       border-radius: 4px
-      background-color: $comment_background_color
+      background-color: $text_background_color
       word-wrap: break-word
       color: $base_font_color
       font-size: $base_font_size
@@ -453,10 +460,10 @@
       padding-top: 15px
     .add-comments-content
       min-height: 88px
-      border: 1px solid $comment_background_color
+      border: 1px solid $border-base-color
       padding: 15px
       border-radius: 4px
-      background-color: $comment_background_color
+      background-color: $text_background_color
       word-wrap: break-word
       color: $base_font_color
       font-size: $base_font_size
@@ -522,27 +529,35 @@
         font-weight: bold
         color: #4D4D4D
         font-size: 15px
-
-  .right-content
+		
+  .right-content-wrap
     margin: 0
+    padding: 0 0 0 15px	
+    background-color: $background_color
+	 
+  .right-content
+    margin: 0 0 10x 0 
     padding: 38px 0 0
     *
       margin: 0
       padding: 0
-      background-color: $aside_background_color
+      background-color: $text_background_color 
     .new-topic-block
       padding: 13px 12px 30px
-      background-color: $aside_background_color
+      background-color: $text_background_color
+      h2
+       font-size: $h2_font_size         
     div, a
       font-size: $medium_font_size
       font-weight: normal
     .new-topic:not(:last-child)
-      margin-bottom: 24px
+      margin-bottom: 26px
     .userImg // заменить на фото
       height: 32px
       border-radius: 50%
       width: 32px
-      background-color: $light_background_color
+      border: 1px solid $border-base-color
+      background-color: $text_background_color
       text-align: center
       line-height: 32px
       margin-right: 6px
@@ -555,12 +570,10 @@
         cursor: pointer
     .new-topic-props
       text-align: center
+      p
+       color: $tags_forumItem_color
 
-  .left-content
-    display: none
-    padding: 0
-    @media (min-width: 1024px) // не придумал, как скрыть блок через flexboxgrid
-      display: block
+  .left-aside, .right-aside
     .side-bar
       background-color: $aside_background_color
       height: 100%
