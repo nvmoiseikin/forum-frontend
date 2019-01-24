@@ -1,38 +1,36 @@
 <template>
   <div class="content row" v-if="isPostLoaded">
-	<div class="left-aside col-md-1 first-md visible-md-lg">
-        <div class="side-bar">
-        </div>
+    <div class="left-aside col-md-1 first-md visible-md-lg">
+       <div class="side-bar">
+       </div>
     </div>
-	<div class="right-aside col-md-1 last-md  visible-md-lg">
-        <div class="side-bar">
-        </div>
+    <div class="right-aside col-md-1 last-md  visible-md-lg">
+      <div class="side-bar">
+      </div>
     </div>
 	<div class="main-content-wrap col-xs-12 col-md-10 row">
 	  <div class="main-content col-xs-12 col-md-8">
-		  <router-link :to="{name: 'home'}" class="arrow-home col-xs-12 start-xs">
-			<i class='icon-arrow-back'></i>
-			<span class='arrow-home-text'>Главная</span>
-		  </router-link>
-
-		  <div class="post-card">
-			<h1 class="post-title">{{ post.title }}</h1>
-			<div class="post-tags row" v-if="hasTags">
-			  <i class='post-tags-label icon-label'></i>
-			  <a href="#" class="post-tag" v-for="(tag, i) in tags" :key="i">{{ tag }}</a>
-			</div>
-			<div class="post-block">
-			  <div class='row between-xs bottom-xs'>
+        <router-link :to="{name: 'home'}" class="arrow-home col-xs-12 start-xs">
+          <i class='icon-arrow-back'></i>
+          <span class='arrow-home-text'>Главная</span>
+        </router-link>
+        <div class="post-card">
+          <h1 class="post-title">{{ post.title }}</h1>
+          <div class="post-tags row" v-if="hasTags">
+          <i class='post-tags-label icon-label'></i>
+            <a href="#" class="post-tag" v-for="(tag, i) in tags" :key="i">{{ tag }}</a>
+          </div>
+          <div class="post-block">
+			 <div class='row between-xs bottom-xs'>
 				<div class="post-user-block col-xs-6 row bottom-xs">
-
 				  <div class="post-user-img">{{ firstCharOfAuthorName }}</div>
 				  <a href="#" class="post-user-name">{{ author.name }}</a>
 				</div>
 				<div class="post-time col-xs-6 end-xs" v-if="post.created_at">
 				  {{ [post.created_at, "YYYY-MM-DD HH:mm:ss"] | moment("from") }}
 				</div>
-			  </div>
-			  <div class="post-body col-xs-12 col-sm">
+			 </div>
+			 <div class="post-body col-xs-12 col-sm">
 				<div  class="post-content"
 					  :class="{ 'post-content-edited': wasEdited }"
 				>
@@ -42,54 +40,52 @@
 				  <router-link :to="{ name: 'post', params: { postId } }" v-if="post.canEdit" tag="span" class="post-props-edit">Редактировать</router-link>
 				  <span class="post-props-delete" @click="delConfirmation">Удалить</span>
 				</div>
-			  </div>
-			</div>
-		  </div>
-
-		  <div class="post-card">
-			<h2 class="post-title-secondary"  v-if="isCommentsLoaded && hasComments">
-			  Комментарии ({{ commentsCount }})
-			</h2>
+			 </div>
+          </div>
+		</div>
+		<div class="post-card">
+          <h2 class="post-title-secondary"  v-if="isCommentsLoaded && hasComments">
+			  Комментарии (:{{ commentsCount }})
+          </h2>
 			<comment  v-for="comment in comments"
 					  :key="comment.id"
 					  :comment="comment"
 					  @answer="prepareComment"
 			/>
-			<div class='post-comments-load-button'>
-			  <button class="button button-inverse">Больше комментариев ... </button>
-			</div>
-			<div class="post-block" v-if="!isLoggedIn">
-			  <h2 id="comment" class="add-comments-header">Оставить комментарий</h2>
-			  <div class="post-block-auth">
+          <div class='post-comments-load-button'>
+			 <button class="button button-inverse">Больше комментариев ... </button>
+          </div>
+          <div class="post-block" v-if="!isLoggedIn">
+		    <h2 id="comment" class="add-comments-header">Оставить комментарий</h2>
+              <div class="post-block-auth">
 				<router-link to="/login" class="post-block-auth-link">Войдите</router-link>
 				или
 				<router-link to="/signup" class="post-block-auth-link">зарегистрируйтесь</router-link>
 				чтобы оставить комментарий
 			  </div>
-			</div>
-
-			<div class="post-block" v-else>
+           </div>
+           <div class="post-block" v-else>
 			  <h2 class="add-comments-header">Оставить комментарий</h2>
 			  <div  class="row">
 				<div class="post-user-img">{{ firstCharOfMyName }}</div>
 				<div class="add-comments-body row col-xs-12 col-sm">
-				  <textarea-autosize  type="text"
+				   <textarea-autosize  type="text"
 									  class="add-comments-content col-xs-12 col-sm"
 									  ref="comment"
-									  v-model="myComment"
+					 				  v-model="myComment"
 									  @keydown.native="operateKeyDown"
-				  ></textarea-autosize>
-				  <div class="row col-xs-12 center-xs start-sm">
-					<button class="button button-main" @click="addComment">Отправить</button>
-				  </div>
+				   ></textarea-autosize>
+				   <div class="row col-xs-12 center-xs start-sm">
+					 <button class="button button-main" @click="addComment">Отправить</button>
+				   </div>
 				</div>
 			  </div>
 			</div>
 		  </div>
-		  <div class="post-card" v-if="true">
+		  <div class="post-card same-request-wrap" v-if="true">
 			<h2>Похожие запросы</h2>
 			 <div class='same-request row middle-xs'>
-			  <div class='col-xs-12 col-sm-6'>
+			  <div class='col-xs-12 col-sm-7'>
 				<h4 class="same-request-header">Как вы разрабатываете REST API?</h4>
 				<div class='same-request-props row'>
 				  <div class='same-request-props-item'>
@@ -108,11 +104,11 @@
 			  </div>
 			  <div class='same-request-answer col-xs-6 col-sm-3'>
 				<a class="row middle-xs">
-				  <i class='icon-speak'></i>
-				  <span>Ответить</span>
+				  <i class='icon-speak col'></i>
+				  <span class='col'>Ответить</span>
 				</a>
 			  </div>
-			  <div class='col-xs-6 col-sm-3 end-xs'>
+			  <div class='col-xs-6 col-sm-2 end-xs'>
 				<div class='same-request-count'>
 				  <span class="same-request-count-number">3</span>
 				  <span class="same-request-count-word">ответа</span>
@@ -124,37 +120,36 @@
 		<div class="right-content-wrap col-xs-12 col-md-4 last-md">
 		  <div class="right-content">
 			<div class="new-topic-block">
-				<h2>Новые темы</h2>
-				<div v-for="lastItem in lastItems" :key="lastItem.id" class="new-topic row">
-					<div class="userImg">{{lastItem.username[0].toUpperCase()}}</div>
-					<p
-						@click="() => linkToTopic(lastItem.id)"
-						class="new-topic-name col-xs">
-						{{lastItem.title}}
-					</p>
-					<div class="new-topic-props col-xs-2 last-xs">
-						<p class="comments_count">{{lastItem.comments}} </p>
-						<p class="comments_count">{{ lastItem.comments | pluralize( ['ответ', 'ответа', 'ответов']) }}</p>
-					</div>
+			  <h2>Новые темы</h2>
+			  <div v-for="lastItem in lastItems" :key="lastItem.id" class="new-topic row">
+                <div class="userImg">{{lastItem.username[0].toUpperCase()}}</div>
+                <p
+				   @click="() => linkToTopic(lastItem.id)"
+				   class="new-topic-name col-xs">
+				   {{lastItem.title}}
+                </p>
+				<div class="new-topic-props col-xs-3 last-xs">
+				  <p class="comments_count">{{lastItem.comments}} </p>
+				  <p class="comments_count">{{ lastItem.comments | pluralize( ['ответ', 'ответа', 'ответов']) }}</p>
 				</div>
-			</div>
+		      </div>
+		    </div>
 		  </div>
-		</div>
-    </div>
-   
-    <div class='shadow' v-if="showDelConfirmation || wasDeleted"></div>
-    <div class="del-confirm row center-xs col-xs-12 around-sm col-sm-6" v-if="showDelConfirmation">
-        <p class="col-xs-12">Вы уверены, что хотите удалить пост? Все комментарии тоже будут удалены.</p>
-        <button class="button button-main col-xs-12 col-sm-5" @click="deletePost">Удалить</button>
-        <button class="button button-main col-xs-12 col-sm-5" @click="cancelDelConfirmation">Отмена</button>
-    </div>
-    <div class="after-del-confirm row center-xs col-xs-12 around-sm col-sm-6" v-if="wasDeleted">
-      <p class="col-xs-12">Пост удалён.</p>
-      <router-link class="col-xs-12 col-sm-7" to="/forum">
-        <button class="button button-main confirm-link">Ок</button>
-      </router-link>
-    </div>
-  </div>
+	   </div>
+     </div>
+     <div class='shadow' v-if="showDelConfirmation || wasDeleted"></div>
+     <div class="del-confirm row center-xs col-xs-12 around-sm col-sm-6" v-if="showDelConfirmation">
+       <p class="col-xs-12">Вы уверены, что хотите удалить пост? Все комментарии тоже будут удалены.</p>
+       <button class="button button-main col-xs-12 col-sm-5" @click="deletePost">Удалить</button>
+       <button class="button button-main col-xs-12 col-sm-5" @click="cancelDelConfirmation">Отмена</button>
+     </div>
+     <div class="after-del-confirm row center-xs col-xs-12 around-sm col-sm-6" v-if="wasDeleted">
+       <p class="col-xs-12">Пост удалён.</p>
+       <router-link class="col-xs-12 col-sm-7" to="/forum">
+         <button class="button button-main confirm-link">Ок</button>
+       </router-link>
+     </div>
+   </div>
 </template>
 
 <script>
@@ -272,7 +267,7 @@
 
   .content
     h2
-      font-size: $h2_font_size
+      font-size: $forun_item_title_secondary_size
       font-weight: bolder
       line-height: 23px
       margin-bottom: 15px
@@ -339,6 +334,7 @@
     font-size: $forun_item_secondary_font_size
     line-height: 15px
     color: $tags_forumItem_color
+    font-weight: 700
     text-decoration: none
     &:hover
       opacity: 1
@@ -445,6 +441,9 @@
       cursor: pointer
       font-weight: 400
       font-size: 12px
+      background-color: $tags_forumItem_color
+      color: $text_background_color
+      border: none
 
   .post-block-auth
     font-size: $base_font_size
@@ -452,28 +451,33 @@
     &-link
       font-size: inherit
       text-decoration: underline
+      color: $tags_forumItem_color
       &:hover
         opacity: 0.5
 
-  .add-comments-body
-    @media screen and ( max-width: 768px )
-      padding-top: 15px
-    .add-comments-content
-      min-height: 88px
-      border: 1px solid $border-base-color
-      padding: 15px
-      border-radius: 4px
-      background-color: $text_background_color
-      word-wrap: break-word
-      color: $base_font_color
-      font-size: $base_font_size
-      margin-bottom: 15px
-      &:focus
-        outline: none
-        border-color: $dark_background_color
-        background-color: $background-color
-    .button
-      margin-bottom: 0
+  .add-comments
+    &-header
+      font-size: $forun_item_title_secondary_size
+    &-body
+      @media screen and ( max-width: 768px )
+        padding-top: 15px
+      .add-comments-content
+        min-height: 88px
+        border: 1px solid $border-base-color
+        padding: 15px
+        border-radius: 4px
+        background-color: $text_background_color
+        word-wrap: break-word
+        color: $base_font_color
+        font-size: $base_font_size
+        margin-bottom: 15px
+        &:focus
+          outline: none
+      .button
+        margin-bottom: 0
+        background-color: $tags_forumItem_color
+        color: $text_background_color
+        border: none
 
   .same-request
     &:not(:last-child)
@@ -506,6 +510,7 @@
           margin-left: 4px
     &-answer
       a
+        justify-content: flex-end
         cursor: default
         &:hover
           opacity: 0.5
@@ -522,36 +527,42 @@
       align-items: center
 
       &-number
-        font-weight: bold
-        color: #4D4D4D
+        font-weight: 700
+        color: $tags_forumItem_color
         font-size: 18px
       &-word
-        font-weight: bold
-        color: #4D4D4D
+        font-weight: 700
+        color: $tags_forumItem_color
         font-size: 15px
 		
-  .right-content-wrap
-    margin: 0
-    padding: 0 0 0 15px	
-    background-color: $background_color
-	 
   .right-content
-    margin: 0 0 10x 0 
-    padding: 38px 0 0
+    margin: 0 0 10px 0  
+    padding: 38px 0 0	
+    @media screen and ( max-width: 970px )
+       padding: 0
+    &-wrap
+      margin: 0 0 15px 0 
+      padding: 0 0 0 15px
+      @media screen and ( max-width: 970px )
+         padding: 0
+      background-color: $background_color  
     *
       margin: 0
       padding: 0
-      background-color: $text_background_color 
+      background-color: $text_background_color  
     .new-topic-block
       padding: 13px 12px 30px
       background-color: $text_background_color
       h2
        font-size: $h2_font_size         
     div, a
+      word-wrap: break-word
       font-size: $medium_font_size
       font-weight: normal
     .new-topic:not(:last-child)
       margin-bottom: 26px
+    .new-topic:not(:last-child)
+      flex-wrap: nowrap
     .userImg // заменить на фото
       height: 32px
       border-radius: 50%
@@ -572,6 +583,8 @@
       text-align: center
       p
        color: $tags_forumItem_color
+       font-family: Roboto, serif
+       font-weight: 700   
 
   .left-aside, .right-aside
     .side-bar
